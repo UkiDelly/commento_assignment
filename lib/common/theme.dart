@@ -29,7 +29,7 @@ abstract class AppTheme {
       titleSmall: TextStyle(
         fontSize: 13.sp,
         fontWeight: FontWeight.normal,
-        color: const Color(0xff7e848a),
+        color: const Color(0xffADB5BD),
       ),
     ),
   );
