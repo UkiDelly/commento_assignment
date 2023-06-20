@@ -1,0 +1,32 @@
+name: commento_assignment
+description: A new Flutter project.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.0.3 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^8.1.3
+  dio: ^5.2.1+1
+  flutter_dotenv: ^5.1.0
+  json_annotation: ^4.8.1
+  logger: ^1.4.0
+  flutter_screenutil: ^5.8.4
+  
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  build_runner: ^2.4.5
+  json_serializable: ^6.7.0
+
+
+
+flutter:
+  uses-material-design: true
+  assets:
+    - .env
