@@ -2,7 +2,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'ad_model.g.dart';
 
-
 @JsonSerializable(fieldRename: FieldRename.snake)
 class AdModel {
   AdModel({
@@ -21,4 +20,9 @@ class AdModel {
   final DateTime updatedAt;
 
   factory AdModel.fromJson(Map<String, dynamic> json) => _$AdModelFromJson(json);
+
+  @override
+  String toString() {
+    return 'AdModel(id: $id, title: $title, contents: $contents, img: $img, createdAt: $createdAt, updatedAt: $updatedAt)';
+  }
 }

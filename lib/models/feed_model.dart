@@ -23,4 +23,9 @@ class FeedModel {
   final DateTime updatedAt;
 
   factory FeedModel.fromJson(Map<String, dynamic> json) => _$FeedModelFromJson(json);
+
+  @override
+  String toString() {
+    return 'FeedModel(id: $id, title: $title, contents: $contents, categoryId: $categoryId, userId: $userId, createdAt: $createdAt, updatedAt: $updatedAt)';
+  }
 }
