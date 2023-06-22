@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../provider/feed_provider.dart';
+import '../../../bloc/feed/feed_state.dart';
 
 typedef OnOrderTypeChanged = void Function(OrderType orderType);
 

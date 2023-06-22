@@ -27,4 +27,7 @@ class FeedDetailModel extends FeedModel {
   final User user;
 
   factory FeedDetailModel.fromJson(Map<String, dynamic> json) => _$FeedDetailModelFromJson(json);
+
+  @override
+  String toString() => 'FeedDetailModel(category: $category, reply: $reply, user: $user)';
 }

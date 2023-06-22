@@ -1,4 +1,4 @@
-import 'package:commento_assignment/provider/feed_provider.dart';
+import 'package:commento_assignment/bloc/feed/feed_bloc.dart';
 import 'package:commento_assignment/screens/feed/widgets/feed_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +6,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:logger/logger.dart';
 
+import '../../bloc/feed/feed_repository.dart';
+import '../../bloc/feed/feed_state.dart';
 import 'widgets/feed_filters_widget.dart';
 
 class FeedScreen extends HookWidget {
@@ -13,10 +15,17 @@ class FeedScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final repository = context.watch<FeedRepository>();
+
+    useEffect(() {
+      context.read<FeedBloc>().add(FeedInitial(1, repository));
+      return null;
+    }, const []);
+
     final feedPage = useState<int>(1);
     final scrollController = useScrollController();
     final isLoadingMore = useState<bool>(false);
-    final feedState = context.watch<FeedNotifier>().state;
+    final feedState = context.watch<FeedBloc>().state;
 
     scrollController.addListener(() async {
       if (scrollController.offset >= scrollController.position.maxScrollExtent - 500) {
@@ -26,15 +35,10 @@ class FeedScreen extends HookWidget {
 
         feedPage.value++;
         isLoadingMore.value = true;
-        await context.read<FeedNotifier>().fetchMoreFeed(feedPage.value);
+        context.read<FeedBloc>().add(FeedLoadMoreData(feedPage.value));
         isLoadingMore.value = false;
       }
     });
-
-    useEffect(() {
-      context.read<FeedNotifier>().fetchFeed();
-      return;
-    }, []);
 
     Logger().d(feedState);
 
@@ -44,7 +48,7 @@ class FeedScreen extends HookWidget {
       FeedError() => Center(child: Text((feedState).message)),
       FeedData() => ListView.builder(
           controller: scrollController,
-          itemCount: (feedState).feeds.length,
+          itemCount: (feedState).feeds.data.length,
           shrinkWrap: true,
           itemBuilder: (context, index) {
             // index가 4의 배수일 때마다 AdCard를 끼워넣는다.
@@ -54,13 +58,13 @@ class FeedScreen extends HookWidget {
                 child: Column(
                   children: [
                     // 광고 카드
-                    FeedAdCard((feedState).ads[index ~/ 4]),
+                    FeedAdCard((feedState).ads.data[index ~/ 4]),
 
                     //
                     SizedBox(height: 10.h),
 
                     // 피드 카드
-                    FeedCard((feedState).feeds[index]),
+                    FeedCard((feedState).feeds.data[index]),
                   ],
                 ),
               );
@@ -68,36 +72,45 @@ class FeedScreen extends HookWidget {
 
             return Padding(
               padding: EdgeInsets.only(bottom: 10.h),
-              child: FeedCard((feedState).feeds[index]),
+              child: FeedCard((feedState).feeds.data[index]),
             );
           },
         ),
     };
 
     return Scaffold(
-        body: SafeArea(
-      child: Column(
-        children: [
-          FeedFilterWidget(
-            onTapSelectCategory: () {
-              scrollController.animateTo(0,
-                  duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
-            },
-          ),
-          Expanded(
-            child: ui,
-          )
-        ],
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SizedBox(
+              width: 375.w,
+              height: 670.h,
+              child: Column(
+                children: [
+                  FeedFilterWidget(
+                    onTapSelectCategory: () {
+                      scrollController.animateTo(0,
+                          duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+                    },
+                  ),
+                  Expanded(
+                    child: ui,
+                  )
+                ],
+              ),
+            );
+          },
+        ),
       ),
-    ));
+    );
 
     // final feedBloc = context.watch<FeedBloc>();
     // final scrollController = useScrollController();
     // final page = useState<int>(1);
-    // final isLoadingMore = useState<bool>(false);
+    // final isLoadingMore.value = useState<bool>(false);
     // useEffect(() {
-    //   context.read<FeedBloc>().add(FeedInitial(page.value));
-    //   page.value++;
+    //   context.read<FeedBloc>().add(FeedInitial(page));
+    //   page++;
     //   return null;
     // }, const []);
 
@@ -108,8 +121,8 @@ class FeedScreen extends HookWidget {
     //     }
     //     isLoadingMore.value = true;
 
-    //     context.read<FeedBloc>().add(FeedLoadMoreData(page.value));
-    //     page.value++;
+    //     context.read<FeedBloc>().add(FeedLoadMoreData(page));
+    //     page++;
     //     isLoadingMore.value = false;
     //   }
     // });

@@ -94,7 +94,7 @@ class FeedResponseModel extends _BaseResponseModel<List<FeedModel>> {
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)
-class FeedDetailResponseModel extends _BaseResponseModel<FeedModel> {
+class FeedDetailResponseModel extends _BaseResponseModel<FeedDetailModel> {
   FeedDetailResponseModel({
     required FeedDetailModel data,
   }) : super(data: data);
