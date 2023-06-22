@@ -68,11 +68,9 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     //* 정렬을 변경하는 Event입니다.
     on<FeedOrderChanged>((event, emit) async {
       final orderType = event.orderType;
-
-      // 필터를 적용하여 데이터를 가져옵니다.
-
       final ads = await _fetchAds(1);
 
+      // 필터를 적용하여 데이터를 가져옵니다.
       final newState = await _fetchData(
           page: 1, ad: ads!, orderType: orderType, categoryList: (state as FeedData).category);
 
@@ -92,10 +90,17 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     });
   }
 
+  // FeedRepository를 사용하기 위한 변수입니다.
   FeedRepository? _feedRepository;
+
+  // 필터로 사용하는 categoryList를 저장하기 위한 변수입니다.
+  // 외부 접근을 제한하기 위해 private 변수로 선언합니다.
   final List<CategoryModel> _categoryList = [];
+
+  // categoryList를 외부에서 접근하기 위한 getter입니다.
   List<CategoryModel> get categoryList => _categoryList;
 
+  /// [fetchCategory] - Category 데이터를 가져오는 함수입니다. 등록된 Respository를 통해 외부에서 데이터를 주입받습니다.
   Future<List<CategoryModel>> fetchCategory() async {
     try {
       final categoryResponse = await FeedDio.dio.get(Api.category);
@@ -105,6 +110,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     }
   }
 
+  /// [_fetchAds] - Ad 데이터를 가져오는 함수입니다.
   Future<AdResponseModel?> _fetchAds(int adPage) async {
     try {
       // Ad 데이터 가져오기
@@ -117,6 +123,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     }
   }
 
+  /// [_fetchData] - 피드 데이터를 가져오는 함수입니다.
   Future<FeedState> _fetchData({
     required int page,
     required AdResponseModel ad,
@@ -125,6 +132,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
   }) async {
     // Feed 데이터 가져오기
     try {
+      //
       final feedReponse = await FeedDio.dio.get(
         Api.list,
         queryParameters: {
@@ -145,13 +153,14 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     }
   }
 
-  Future<FeedData?> _fetchMoreData(int page) async {
+  /// [_fetchMoreDate] 스크롤이 끝에 닿았을 때 추가 데이터를 가져오는 함수입니다.
+  Future<FeedData> _fetchMoreData(int page) async {
     // Feed 데이터 가져오기
     final ads = await _fetchAds(page);
 
     try {
+      // Dart 3.0에서 추가된 패턴을 통해 데이터 추출
       var FeedData(:category, :orderType) = state as FeedData;
-
       final response = await FeedDio.dio.get(Api.list, queryParameters: {
         'page': page,
         'limit': 10,
@@ -174,11 +183,11 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
         orderType: orderType,
       );
     } on DioException {
-      return null;
+      return state as FeedData;
     }
   }
 
-  /// [finfCategory] 함수는 [id]를 받아서 [CategoryModel]을 반환합니다.
+  /// [findCategory] 함수는 [id]를 받아서 [CategoryModel]을 반환합니다.
   CategoryModel findCategory(int id) {
     return (state as FeedData).category.firstWhere((element) => element.id == id);
   }

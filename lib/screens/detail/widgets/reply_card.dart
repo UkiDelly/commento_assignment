@@ -11,7 +11,6 @@ class ReplyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 201.h,
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
@@ -58,6 +57,8 @@ class ReplyCard extends StatelessWidget {
                   color: const Color(0xff7e848a),
                 ),
           ),
+
+          SizedBox(height: 20.h)
         ],
       ),
     );

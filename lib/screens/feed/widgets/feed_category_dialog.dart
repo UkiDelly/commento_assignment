@@ -10,10 +10,7 @@ import '../../../bloc/feed/feed_state.dart';
 class FeedCategoryChangeDialog extends HookWidget with WidgetsBindingObserver {
   const FeedCategoryChangeDialog({
     Key? key,
-    required this.parentContext,
   }) : super(key: key);
-
-  final BuildContext parentContext;
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +22,8 @@ class FeedCategoryChangeDialog extends HookWidget with WidgetsBindingObserver {
     }, [ScreenUtil().orientation]);
 
     final categorySelected = useState<List<CategoryModel>>(
-        (parentContext.read<FeedBloc>().state as FeedData).copyWith().category);
-    final categoryList = parentContext.watch<FeedBloc>().categoryList;
+        (context.read<FeedBloc>().state as FeedData).copyWith().category);
+    final categoryList = context.watch<FeedBloc>().categoryList;
 
     return Dialog(
       backgroundColor: Colors.white,
@@ -108,6 +105,7 @@ class FeedCategoryChangeDialog extends HookWidget with WidgetsBindingObserver {
                       height: 40.h,
                       child: ElevatedButton(
                         onPressed: () {
+                          context.read<FeedBloc>().add(FeedCategoryChanged(categorySelected.value));
                           Navigator.of(context).pop(categorySelected.value);
                         },
                         child: Text(
@@ -147,31 +145,37 @@ class _FilterCheckBox extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final select = useState<bool>(selected);
-    return Row(
-      children: [
-        // 체크 박스
-        SizedBox(
-          width: 20.w,
-          height: 20.h,
-          child: Checkbox.adaptive(
-            value: select.value,
-            onChanged: (value) {
-              select.value = value!;
+    return InkWell(
+      onTap: () {
+        select.value = !select.value;
+        onSelected(select.value);
+      },
+      child: Row(
+        children: [
+          // 체크 박스
+          SizedBox(
+            width: 20.w,
+            height: 20.h,
+            child: Checkbox.adaptive(
+              value: select.value,
+              onChanged: (value) {
+                select.value = value!;
 
-              onSelected(select.value);
-            },
+                onSelected(select.value);
+              },
+            ),
           ),
-        ),
 
-        //
-        SizedBox(width: 5.w),
+          //
+          SizedBox(width: 5.w),
 
-        //
-        Text(
-          category.name,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-      ],
+          //
+          Text(
+            category.name,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ],
+      ),
     );
   }
 }

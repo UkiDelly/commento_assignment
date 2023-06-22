@@ -24,7 +24,6 @@ class FeedCard extends HookWidget {
             .push(MaterialPageRoute(builder: (context) => DetailScreen(feedItem.id)));
       },
       child: Container(
-        height: 179.h,
         color: Colors.white,
         padding: EdgeInsets.symmetric(horizontal: 15.w),
         child: Column(
@@ -94,6 +93,9 @@ class FeedCard extends HookWidget {
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.titleMedium,
             ),
+
+            //
+            SizedBox(height: 20.h)
           ],
         ),
       ),
@@ -103,63 +105,88 @@ class FeedCard extends HookWidget {
 
 /// 광고 카드
 /// [adItem] : 광고 데이터
-class FeedAdCard extends StatelessWidget {
+class FeedAdCard extends HookWidget {
   const FeedAdCard(this.adItem, {super.key});
 
   final AdModel adItem;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 381.h,
-      color: Colors.white,
-      padding: EdgeInsets.symmetric(horizontal: 15.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          //
-          SizedBox(height: 21.h),
+    final visible = useState<bool>(true);
 
-          // sponsered 문구
-          Text("sponsered", style: Theme.of(context).textTheme.titleSmall),
+    return Visibility(
+      visible: visible.value,
+      child: Container(
+        height: 381.h,
+        color: Colors.white,
+        padding: EdgeInsets.symmetric(horizontal: 15.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            //
+            SizedBox(height: 21.h),
 
-          //
-          SizedBox(height: 16.5.h),
+            // sponsered 문구
+            //* 고객 요청 사항
+            //  - 광고 카드 가리기 기능 추가
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                //
+                Text("sponsered", style: Theme.of(context).textTheme.titleSmall),
 
-          // 이미지
-          Flexible(
-            child: Image.network(
-              "${dotenv.env['ADIMAGEURL']!}/${adItem.img}",
-              width: double.infinity,
-              fit: BoxFit.fitWidth,
+                // 가리기 버튼
+                InkWell(
+                  onTap: () {
+                    visible.value = false;
+                  },
+                  child: Icon(
+                    size: 20.w,
+                    Icons.close,
+                    color: Theme.of(context).disabledColor,
+                  ),
+                ),
+              ],
             ),
-          ),
 
-          //
-          SizedBox(height: 16.5.h),
+            //
+            SizedBox(height: 16.5.h),
 
-          // 제목
-          Text(
-            adItem.title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
+            // 이미지
+            Flexible(
+              child: Image.network(
+                "${dotenv.env['ADIMAGEURL']!}/${adItem.img}",
+                width: double.infinity,
+                fit: BoxFit.fitWidth,
+              ),
+            ),
 
-          //
-          SizedBox(height: 6.h),
+            //
+            SizedBox(height: 16.5.h),
 
-          // 내용
-          Text(
-            adItem.contents,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+            // 제목
+            Text(
+              adItem.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
 
-          //
-          SizedBox(height: 20.h)
-        ],
+            //
+            SizedBox(height: 6.h),
+
+            // 내용
+            Text(
+              adItem.contents,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+
+            //
+            SizedBox(height: 20.h)
+          ],
+        ),
       ),
     );
   }

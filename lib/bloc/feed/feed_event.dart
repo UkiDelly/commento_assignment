@@ -3,7 +3,7 @@ part of 'feed_bloc.dart';
 sealed class FeedEvent {}
 
 final class FeedInitial extends FeedEvent {
-  FeedInitial(this.page, this.feedRepository);
+  FeedInitial({required this.page, required this.feedRepository});
   int page;
   FeedRepository feedRepository;
 }

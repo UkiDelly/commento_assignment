@@ -3,7 +3,6 @@ import 'package:commento_assignment/screens/feed/widgets/feed_category_dialog.da
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 import '../../../bloc/feed/feed_state.dart';
@@ -86,20 +85,12 @@ class FeedFilterWidget extends HookWidget {
                   ),
                 ),
                 onPressed: () async {
-                  final selectedCategory = await showDialog(
+                  await showDialog(
                     context: innerContext,
-                    builder: (context) => FeedCategoryChangeDialog(
-                      parentContext: innerContext,
-                    ),
+                    builder: (context) => const FeedCategoryChangeDialog(),
                   );
-
-                  if (selectedCategory != null) {
-                    Logger().d(selectedCategory);
-
-                    context.read<FeedBloc>().add(FeedCategoryChanged(selectedCategory));
-                  }
                 },
-                child: Text('필터', style: Theme.of(context).textTheme.titleSmall),
+                child: FittedBox(child: Text('필터', style: Theme.of(context).textTheme.titleSmall)),
               ),
             );
           }),

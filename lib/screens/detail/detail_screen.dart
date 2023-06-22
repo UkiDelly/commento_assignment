@@ -1,5 +1,6 @@
 import 'package:commento_assignment/bloc/detail/detail_state.dart';
 import 'package:commento_assignment/common/colors.dart';
+import 'package:commento_assignment/screens/detail/widgets/change_order_widget.dart';
 import 'package:commento_assignment/screens/detail/widgets/reply_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,20 +22,18 @@ class DetailScreen extends HookWidget {
     final repository = context.watch<FeedRepository>();
     final feedDetailBloc = context.watch<FeedDetailBloc>().state;
 
-    
-    // Stateful Widget에서는 initState과 같은 동작
-    // [] 안에 들어가는 값이 바뀔때마다 useEffect가 실행되지만 비어 있을경우 한번만 실행
+    // Stateful Widget에서는 didChangeDependencies과 같은 동작을 실행,
+    // 하지만 []이 비어있으면 한번만 실행 initState와 같은 동작
     useEffect(() {
       context.read<FeedDetailBloc>().add(FeedDetailInitialEvent(feedRepository: repository));
-      context.read<FeedDetailBloc>().add(FeedDetailLoadEvent(id));
 
       return () {};
     }, []);
 
-    // id가 바뀔때마다 LoadingEvent를 발생시켜서 이전의 데이터가 안보이게 처리
-    // Stateful Widget에서는 initState에서 처리했지만, HookWidget에서는 useEffect를 사용해야함
+    // id가 바뀔때마다 LoadingEvent를 발생시켜서 FeedDetailState을 FeedLoadingState으로 변경 처리후 다시 FeedLoadEvent를 발생시켜서 데이터를 가져옴
     useEffect(() {
       context.read<FeedDetailBloc>().add(FeedDetailLoadingEvent());
+      context.read<FeedDetailBloc>().add(FeedDetailLoadEvent(id));
       return () {};
     }, [id]);
 
@@ -44,12 +43,19 @@ class DetailScreen extends HookWidget {
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 15.w),
           child: switch (feedDetailBloc) {
+            // Dart 3.0의 switch expression을 사용하여 FeedDetailState에 따라서 다른 위젯을 반환
+
+            // 로딩 상태
             FeedDetailLoadingState() => const Center(
                 child: CircularProgressIndicator.adaptive(),
               ),
+
+            // 에러 상태
             FeedDetailErrorState() => Center(
                 child: Text(feedDetailBloc.message),
               ),
+
+            // 데이터 상태
             FeedDetailData() => CustomScrollView(
                 slivers: [
                   //
@@ -108,9 +114,18 @@ class DetailScreen extends HookWidget {
                         SizedBox(height: 31.h),
 
                         // 댓글 갯수
-                        Text(
-                          "답변 ${feedDetailBloc.feedDetail.reply.length}",
-                          style: Theme.of(context).textTheme.titleMedium,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            //
+                            Text(
+                              "답변 ${feedDetailBloc.feedDetail.reply.length}",
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+
+                            //
+                            const FeedDetailChangeOrderWidget()
+                          ],
                         ),
 
                         //
@@ -119,7 +134,7 @@ class DetailScreen extends HookWidget {
                     ),
                   ),
 
-                  //
+                  // 답변 리스트
                   SliverList.builder(
                     itemCount: feedDetailBloc.feedDetail.reply.length,
                     itemBuilder: (context, index) {

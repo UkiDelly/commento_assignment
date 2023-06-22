@@ -1,5 +1,7 @@
 import 'package:commento_assignment/bloc/feed/feed_repository.dart';
 
+import '../../screens/detail/widgets/change_order_widget.dart';
+
 sealed class FeedDetailEvent {}
 
 class FeedDetailInitialEvent extends FeedDetailEvent {
@@ -11,7 +13,11 @@ class FeedDetailInitialEvent extends FeedDetailEvent {
 
 final class FeedDetailLoadingEvent extends FeedDetailEvent {}
 
-final class FeedDetailDisposeEvent extends FeedDetailEvent {}
+
+class FeedDetailChangeOrderEvent extends FeedDetailEvent {
+  FeedDetailChangeOrderEvent(this.order);
+  final FeedDetailOrder order;
+}
 
 final class FeedDetailLoadEvent extends FeedDetailEvent {
   FeedDetailLoadEvent(this.id);

@@ -10,7 +10,10 @@ import 'bloc/detail/detail_bloc.dart';
 import 'bloc/feed/feed_bloc.dart';
 
 Future<void> main() async {
+  // .env 파일 등록
   await dotenv.load(fileName: '.env');
+
+  // 화면 사이즈 설정
   await ScreenUtil.ensureScreenSize();
   runApp(const MainApp());
 }
