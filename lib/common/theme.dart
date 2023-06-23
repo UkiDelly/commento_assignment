@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 abstract class AppTheme {
-  AppTheme._();
-
   static ThemeData lightTheme = ThemeData(
     scaffoldBackgroundColor: const Color(0xfff4f5f7),
     cardColor: Colors.white,

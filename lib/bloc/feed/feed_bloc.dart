@@ -20,8 +20,8 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
 
       _feedRepository = event.feedRepository;
 
-      // Category 데이터 가져오기
-      final categoryList = await _feedRepository!.fetchCategory().last;
+      // repository에서 category 데이터 가져오기
+      final categoryList = await _feedRepository!.fetchCategory();
 
       // 필터 선택지로 사용하기 위헤 categoryList를 저장합니다.
       _categoryList.addAll(categoryList);
@@ -47,9 +47,6 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       } else {
         // 추가 데이터를 가져옵니다.
         final newState = await _fetchMoreData(page);
-        if (newState == null) {
-          return;
-        }
 
         // orderType에 따라 피드 데이터를 정렬합니다.
         if (newState.orderType == OrderType.asc) {
@@ -100,16 +97,6 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
   // categoryList를 외부에서 접근하기 위한 getter입니다.
   List<CategoryModel> get categoryList => _categoryList;
 
-  /// [fetchCategory] - Category 데이터를 가져오는 함수입니다. 등록된 Respository를 통해 외부에서 데이터를 주입받습니다.
-  Future<List<CategoryModel>> fetchCategory() async {
-    try {
-      final categoryResponse = await FeedDio.dio.get(Api.category);
-      return CategoryResponseModel.fromJson(categoryResponse.data).category;
-    } on DioException {
-      return [];
-    }
-  }
-
   /// [_fetchAds] - Ad 데이터를 가져오는 함수입니다.
   Future<AdResponseModel?> _fetchAds(int adPage) async {
     try {
@@ -153,7 +140,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
     }
   }
 
-  /// [_fetchMoreDate] 스크롤이 끝에 닿았을 때 추가 데이터를 가져오는 함수입니다.
+  /// [_fetchMoreData] 스크롤이 끝에 닿았을 때 추가 데이터를 가져오는 함수입니다.
   Future<FeedData> _fetchMoreData(int page) async {
     // Feed 데이터 가져오기
     final ads = await _fetchAds(page);
@@ -183,6 +170,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
         orderType: orderType,
       );
     } on DioException {
+      // 예외 발생시 기존의 state을 반환
       return state as FeedData;
     }
   }
