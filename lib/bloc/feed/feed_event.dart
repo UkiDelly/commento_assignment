@@ -23,3 +23,8 @@ final class FeedLoadMoreData extends FeedEvent {
   FeedLoadMoreData(this.page);
   final int page;
 }
+
+class FeedSearchEvent extends FeedEvent {
+  FeedSearchEvent(this.keyword);
+  final String keyword;
+}

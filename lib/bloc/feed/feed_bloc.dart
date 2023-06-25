@@ -1,4 +1,5 @@
 import 'package:commento_assignment/bloc/feed/feed_repository.dart';
+import 'package:commento_assignment/models/feed_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -88,6 +89,9 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       // 상태 업뎅트
       emit(newState);
     });
+
+    //* 키워드로 피드 아이템 검색
+    on<FeedSearchEvent>((event, emit) {});
   }
 
   // FeedRepository를 사용하기 위한 변수입니다.
@@ -99,6 +103,9 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
 
   // categoryList를 외부에서 접근하기 위한 getter입니다.
   List<CategoryModel> get categoryList => _categoryList;
+
+  //
+  List<FeedModel> searchedFeedItem = [];
 
   /// [fetchCategory] - Category 데이터를 가져오는 함수입니다. 등록된 Respository를 통해 외부에서 데이터를 주입받습니다.
   Future<List<CategoryModel>> fetchCategory() async {
